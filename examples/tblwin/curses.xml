@@ -1,0 +1,10 @@
+<xml>
+    <window name="win_table" width="100%" height="100%" style="table">
+        <title text="Table Window Title" />
+        <caption text="This is a caption" align="left" />        
+        <table cols="A,B,C,D" />
+        <button text="   OK   " key="RET" action="func1" />
+        <button text=" CANCEL " key="ESC" action="func2" />
+    </window>
+</xml>
+
