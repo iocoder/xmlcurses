@@ -4,4 +4,5 @@ class Field:
     name      = ""
     title     = ""
     text      = ""
+    width     = ""
 

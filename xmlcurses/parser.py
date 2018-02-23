@@ -42,6 +42,7 @@ def parse(xmlfile, wins):
                 fld.name  = xmlelm.attrib["name"]
                 fld.title = xmlelm.attrib["title"]
                 fld.text  = xmlelm.attrib["text"]
+                fld.width = xmlelm.attrib["width"]
                 win.fields.append(fld)
             elif xmlelm.tag == "button":
                 # button

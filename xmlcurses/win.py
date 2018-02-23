@@ -1,9 +1,33 @@
 #!/usr/bin/env python
 
+from curses.textpad import Textbox, rectangle
+
+# add spaces to string to align it to the center
 def center(string, width):
     padleft  = "".join(([" "] * ((width - len(string))/2)))
     padright = "".join(([" "] * (width - len(string) - len(padleft))))
     return padleft + string + padright
+
+# validate keyboard input for textbox
+def validate(ch):
+    global edit_cmd
+    if ch == 10:
+        # enter
+        edit_cmd = ch
+        ch = 7
+    if ch == 27:
+        # escape
+        edit_cmd = ch
+        ch = 7
+    elif ch == 259:
+        # key up
+        edit_cmd = ch
+        ch = 7
+    elif ch == 258:
+        # key down
+        edit_cmd = ch
+        ch = 7
+    return ch
 
 class Window:
     name      = ""      # window XML identifier
@@ -21,20 +45,64 @@ class Window:
     hideFlag  = False   # To be hidden after action execution
     curses    = None    # pointer to curses module
     actions   = None    # pointer to action list
+    curswin   = None    # pointer to curses' window structure
+    firstline = 1       # first line for window content
+    edit_cmd  = 0       # used for textbox manipulation
 
-    # print buttons line
-    def printButtons(self, curswin):
+    # print title line
+    def printTitle(self):
         # get global pointers
         curses  = self.curses
         actions = self.actions
-        # store old y and x
-        old_y, old_x = curswin.getyx()
+        # get curses' window structure
+        curswin = self.curswin
+        # get window size
+        rows, cols = curswin.getmaxyx()
+        # get first line for window content
+        firstline = self.firstline
+        # check whether the title string is not empty
+        if (self.title != ""):
+            # print the title
+            curswin.addstr(firstline, 1, center(self.title, cols-2), 
+                           curses.color_pair(1)|curses.A_BOLD)
+            # update firstline
+            self.firstline += 2
+
+    # print caption
+    def printCaption(self):
+        # get global pointers
+        curses  = self.curses
+        actions = self.actions
+        # get curses' window structure
+        curswin = self.curswin
+        # get window size
+        rows, cols = curswin.getmaxyx()
+        # get first line
+        firstline = self.firstline
+        # check whether captext is empty or not
+        if (self.captext != ""):
+            if (self.capalign == "center"):
+                curswin.addstr(firstline, 1, center(self.captext, cols-2), 
+                               curses.color_pair(2)|curses.A_BOLD);
+            elif (self.capalign == "left"):
+                curswin.addstr(firstline, 2, self.captext, 
+                               curses.color_pair(2)|curses.A_BOLD);
+            # update firstline       
+            self.firstline += 2
+
+    # print buttons line
+    def printButtons(self):
+        # get global pointers
+        curses  = self.curses
+        actions = self.actions
+        # get curses' window structure
+        curswin = self.curswin
         # get width and height
         max_y, max_x = curswin.getmaxyx()
         line = max_y - 2
-        cols = max_x
+        cols = max_x - 2
         # move cursor to line
-        curswin.move(line, 0)
+        curswin.move(line, 1)
         # padding
         btnswidth = 0
         for btn in self.buttons:
@@ -47,59 +115,64 @@ class Window:
             curswin.addstr(":")
             curswin.addstr(btn.text, curses.color_pair(1)|curses.A_BOLD)
             curswin.addstr("  ")
-        # return to old y and x coordinates
-        curswin.move(old_y, old_x)
 
-    def printTable(self, curswin, first_line):
+    # print table contents
+    def printTable(self):
         # get global pointers
         curses  = self.curses
         actions = self.actions
+        # get curses' window structure
+        curswin = self.curswin
+        # get first line
+        firstline = self.firstline
+        # get window width
+        rows, cols = curswin.getmaxyx()
         # initialize current selected row
         if (len(self.tbldata) > 0):
             self.selrow = 0
         else:
             self.selrow = -1
-        # get window width
-        rows, cols = curswin.getmaxyx()
-        # move to window contents
-        curswin.move(first_line, 0)
         # dashes
-        dashes  = "".join(["-" * cols])
-        curswin.addstr(dashes, curses.color_pair(2)|curses.A_BOLD)
+        dashes  = "".join(["-" * (cols-2)])
+        curswin.addstr(firstline+0, 1, dashes, curses.color_pair(2)|curses.A_BOLD)
         # print table titles
-        colwidth = (cols-1)/len(self.tblcols)
+        colwidth = (cols-3)/len(self.tblcols)
+        curswin.move(firstline+1, 1)
         for tblcol in self.tblcols:
             curswin.addstr(center(tblcol, colwidth), 
                            curses.color_pair(2)|curses.A_BOLD)
-        curswin.addstr("\n")
         # dashes again
-        curswin.addstr(dashes, curses.color_pair(2)|curses.A_BOLD)
-        # calculate table borders
-        first_line += 3
+        curswin.addstr(firstline+2, 1, dashes, curses.color_pair(2)|curses.A_BOLD)
         last_line   = rows - 4
-        # print table row
+        # print table rows
         while not self.hideFlag:
-            # move to table head
-            curswin.move(first_line, 0)
             # print rows
             cur_row = 0
-            max_row = 0
             for row in self.tbldata:
+                # move to row line
+                curswin.move(firstline+cur_row+3, 1)
+                # initialize color
+                if (cur_row == self.selrow):
+                    # selected row
+                    color = curses.color_pair(3)|curses.A_BOLD|curses.A_REVERSE
+                else:
+                    # normal color for other rows
+                    color = curses.color_pair(3)|curses.A_BOLD 
+                # loop over columns
                 for col in self.tblcols:
                     # get cell value
                     cell = row[col]
-                    if (cur_row == self.selrow):
-                        # selected row
-                        color = curses.color_pair(3)|curses.A_BOLD|curses.A_REVERSE
-                    else:
-                        # normal color for other rows
-                        color = curses.color_pair(3)|curses.A_BOLD 
                     # add cell
                     curswin.addstr(center(cell, colwidth), color)
-                # add linefeed
+                # print some padding spaces
+                while True:
+                    y, x = curswin.getyx()
+                    if (x < cols-1):
+                        curswin.addstr(" ", color)
+                    else:
+                        break
+                # have finshed one row
                 cur_row = cur_row + 1
-                max_row = max_row + 1
-                curswin.addstr("\n")
             # refresh display
             curswin.refresh()
             # process keyboard input
@@ -122,8 +195,83 @@ class Window:
                         actions[btn.action](self)
 
     # print fields area
-    def printFields(self, curswin, first_line):
-        None
+    def printFields(self):
+        # get global pointers
+        curses  = self.curses
+        actions = self.actions
+        # get curses' window structure
+        curswin = self.curswin
+        # get first line
+        firstline = self.firstline
+        # get window width
+        rows, cols = curswin.getmaxyx()
+        # calculate field's title width
+        titlewidth = max(len(fld.title) for fld in self.fields)+1
+        # print fields
+        cur_field = 0
+        txtwins  = []
+        txtboxes = []
+        for field in self.fields:
+            # calculate textbox width
+            totwidth  = cols-4-titlewidth
+            textwidth = 0
+            if (field.width[-1] == "%"):
+                textwidth = int(field.width[:-1])*(totwidth)/100
+            else:
+                textwidth = min(int(field.width), totwidth)
+            x = (cols-4-textwidth-titlewidth)/2+2
+            # move to line
+            curswin.move(firstline+cur_field, x)
+            # print title
+            curswin.addstr(field.title)
+            # text window
+            txtwin = curses.newwin(1, textwidth, firstline+cur_field, x+titlewidth)
+            txtwin.bkgd('\0', curses.color_pair(4))
+            txtwin.clear()
+            txtwins.append(txtwin)
+            # if edit, insert val
+            txtwin.addstr(field.text)
+            # create an editable box over the window
+            txtbox = Textbox(txtwin)
+            txtboxes.append(txtbox)        
+            # next field
+            cur_field = cur_field + 1
+        # refresh display
+        curswin.refresh()
+        for txtwin in txtwins:
+            txtwin.refresh()
+        # show cursor    
+        curses.curs_set(1)
+        cur_box = 0
+        # edit the boxes
+        while not self.hideFlag:
+            # let the user edit first textbox       
+            txtwins[cur_box].refresh()
+            txtboxes[cur_box].edit(
+                lambda ch: 
+                    [setattr(self,'edit_cmd', ch),
+                     7 if ch in [10, 27, 259, 258] else ch][-1]);
+            # process command:
+            if (self.edit_cmd == 259):
+                # key up
+                if (cur_box > 0):
+                    cur_box = cur_box - 1
+            elif (self.edit_cmd == 258):
+                # key down
+                if (cur_box < len(txtboxes)-1):
+                    cur_box = cur_box + 1
+            else:
+                # execute button
+                for btn in self.buttons:
+                    if ((btn.key == "RET" and self.edit_cmd == 10) or
+                        (btn.key == "ESC" and self.edit_cmd == 27)):
+                        actions[btn.action](self)
+        # collect inputs
+        cur_box = 0
+        for field in self.fields:
+            field.text = txtboxes[cur_box].gather().strip()
+        # hide cursor    
+        curses.curs_set(0)
 
     def show(self):
         # get global pointers
@@ -155,36 +303,23 @@ class Window:
         winy = (totlines-rows)/2
         # create window
         curswin = curses.newwin(rows, cols, winy, winx)
+        curswin.border()
+        self.curswin = curswin        
         cur_line = 0
         # title
-        if (self.title != ""):
-            curswin.addstr(center(self.title, cols), 
-                           curses.color_pair(1)|curses.A_BOLD)
-            cur_line += 1
-        # empty line
-        curswin.addstr("\n")
-        cur_line += 1 
+        self.printTitle()
         # caption
-        if (self.captext != ""):
-            if (self.capalign == "center"):
-                curswin.addstr(center(self.captext, cols), 
-                               curses.color_pair(2)|curses.A_BOLD);
-                cur_line += 1
-            elif (self.capalign == "left"):
-                curswin.addstr(self.captext + "\n", 
-                               curses.color_pair(2)|curses.A_BOLD);
-                cur_line += 1
-            # empty line after caption            
-            curswin.addstr("\n")
-            cur_line += 1
-        # calculate first_line for window content
-        first_line = cur_line
+        self.printCaption()
         # print buttons
-        self.printButtons(curswin)
+        self.printButtons()
         # print window contents
         if (self.style == "table"):
             # print table elements and wait for actions
-            self.printTable(curswin, first_line)
+            self.printTable()
+        elif (self.style == "input"):
+            # print fields and wait for actions
+            self.printFields()
+
 
     # add row to table
     def addRow(self, row):
@@ -194,7 +329,7 @@ class Window:
     def setField(self, name, text):
         for field in self.fields:
             if field.name == name:
-                field.text = val
+                field.text = text
 
     # get field's value
     def getField(self, name):

@@ -30,12 +30,12 @@ def init(xmlfile):
     curses.init_pair(3, curses.COLOR_GREEN,  curses.COLOR_BLACK)
     curses.init_pair(4, curses.COLOR_BLACK,  curses.COLOR_YELLOW)
 
-def addAction(name, func):
-    actions[name] = func
-
-def term():
+def close():
     # reset terminal settings
     curses.endwin()
+
+def setAction(name, func):
+    actions[name] = func
 
 def newWinByName(name):
     win = Window()
