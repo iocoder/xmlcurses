@@ -8,27 +8,6 @@ def center(string, width):
     padright = "".join(([" "] * (width - len(string) - len(padleft))))
     return padleft + string + padright
 
-# validate keyboard input for textbox
-def validate(ch):
-    global edit_cmd
-    if ch == 10:
-        # enter
-        edit_cmd = ch
-        ch = 7
-    if ch == 27:
-        # escape
-        edit_cmd = ch
-        ch = 7
-    elif ch == 259:
-        # key up
-        edit_cmd = ch
-        ch = 7
-    elif ch == 258:
-        # key down
-        edit_cmd = ch
-        ch = 7
-    return ch
-
 class Window:
     name      = ""      # window XML identifier
     width     = ""      # window XML width
@@ -111,10 +90,10 @@ class Window:
         curswin.addstr(spaces)
         # print buttons
         for btn in self.buttons:
-            curswin.addstr(btn.key)
-            curswin.addstr(":")
+            curswin.addstr(btn.key,  curses.color_pair(5)|curses.A_BOLD)
+            curswin.addstr(":",      curses.color_pair(5)|curses.A_BOLD)
             curswin.addstr(btn.text, curses.color_pair(1)|curses.A_BOLD)
-            curswin.addstr("  ")
+            curswin.addstr("  ",     curses.color_pair(5)|curses.A_BOLD)
 
     # print table contents
     def printTable(self):
@@ -223,10 +202,10 @@ class Window:
             # move to line
             curswin.move(firstline+cur_field, x)
             # print title
-            curswin.addstr(field.title)
+            curswin.addstr(field.title, curses.color_pair(5)|curses.A_BOLD)
             # text window
             txtwin = curses.newwin(1, textwidth, firstline+cur_field, x+titlewidth)
-            txtwin.bkgd('\0', curses.color_pair(4))
+            txtwin.bkgd('\0', curses.color_pair(4)|curses.A_BOLD|curses.A_REVERSE)
             txtwin.clear()
             txtwins.append(txtwin)
             # if edit, insert val
@@ -272,6 +251,28 @@ class Window:
             field.text = txtboxes[cur_box].gather().strip()
         # hide cursor    
         curses.curs_set(0)
+
+    # print content for message window
+    def printMessage(self):
+        # get global pointers
+        curses  = self.curses
+        actions = self.actions
+        # get curses' window structure
+        curswin = self.curswin
+        # wait for input or hide()
+        while not self.hideFlag:
+            # refresh display
+            curswin.refresh()
+            # enable keypad
+            curswin.keypad(1)
+            # wait for button press
+            char = curswin.getkey()
+            # process keyboard input
+            for btn in self.buttons:
+                if ((btn.key == "RET" and char == chr(10)) or
+                    (btn.key == "ESC" and char == chr(27)) or
+                    btn.key == char.capitalize()):
+                    actions[btn.action](self)
 
     def show(self):
         # get global pointers
@@ -319,7 +320,9 @@ class Window:
         elif (self.style == "input"):
             # print fields and wait for actions
             self.printFields()
-
+        else:
+            # just wait for actions
+            self.printMessage()
 
     # add row to table
     def addRow(self, row):

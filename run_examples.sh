@@ -3,5 +3,6 @@
 export PYTHONPATH=$PYTHONPATH:`pwd`/
 
 #cd examples/tblwin   && ./tblwin.py
-cd examples/inputwin && ./inputwin.py
+#cd examples/inputwin && ./inputwin.py
+cd examples/msgwin && ./msgwin.py
 
