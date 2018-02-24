@@ -1,10 +1,32 @@
 <xml>
-    <window name="win_table" width="100%" height="100%" style="table">
-        <title text="Table Window Title" />
-        <caption text="This is a caption" align="left" />        
-        <table cols="A,B,C,D" />
-        <button text="   OK   " key="RET" action="act_ok" />
-        <button text=" CANCEL " key="ESC" action="act_ca" />
-    </window>
+    <colors>
+        <color name="win"     foreground="white"  background="black" />
+        <color name="title"   foreground="white"  background="blue"  />
+        <color name="caption" foreground="yellow" background="black" />
+        <color name="table"   foreground="green"  background="black" />
+        <color name="field"   foreground="yellow" background="black" />
+        <color name="button"  foreground="white"  background="blue"  />
+    </colors>
+    <windows>
+        <window name="win_table" width="100%" height="100%" style="table" color="win">
+            <title   text="Table Window Title"                color="title" />
+
+            <caption text=""                    align="left"  color="caption" />
+            <caption text=" This is a caption " align="left"  color="caption" />
+            <caption text=""                    align="left"  color="caption" />
+
+            <table   name="tbl" cols="A,B,C,D"  height="100%" color="table" />
+
+            <field   name="fld1" title="Field1:" text="" width="100%" color="field" />
+            <field   name="fld2" title="Field2:" text="" width="100%" color="field" />
+
+            <caption text=""                    align="left"  color="caption" />
+
+            <buttonbox name="box">
+                <button name="btn_ok" key="RET" text="   OK   " color="button" />
+                <button name="btn_ca" key="ESC" text=" CANCEL " color="button" />
+            </buttonbox>
+        </window>
+    </windows>
 </xml>
 

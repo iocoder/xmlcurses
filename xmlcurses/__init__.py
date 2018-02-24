@@ -1,47 +1,218 @@
 #!/usr/bin/env python
 
+# external libraries and modules
 import curses
+import xml.etree.ElementTree
 import atexit
+import os
+import tempfile
+import sys
 
-from win    import Window
-from parser import parse
+# xmlcurses library context
+from con import Context
 
-stdscr  = None
-wins    = {}
-actions = {}
+# submodules public to the user of xmlcurses
+from clr import Color
+from win import Window
+from ttl import Title
+from cap import Caption
+from tbl import Table
+from fld import Field
+from box import ButtonBox
+from btn import Button
 
-def init(xmlfile):
-    global stdscr
-    # create window structures
-    parse(xmlfile, wins)
+# errors
+from err import XMLException
+
+#################################################################
+#                      Context Manipulation                     #
+#################################################################
+
+# create a new context for xmlcurses library
+con = Context()
+con.curses    = curses
+con.wins      = {}
+con.colors    = {}
+con.tmpdir    = ""
+con.errfile   = ""
+con.stderr    = None
+# initialize all submodules with this context
+Color.con     = con
+Window.con    = con
+Title.con     = con
+Caption.con   = con
+Table.con     = con
+Field.con     = con
+ButtonBox.con = con
+Button.con    = con
+
+#################################################################
+#                         XML Parsing                           #
+#################################################################
+
+def parseColors(xmltree):
+    # parse xml
+    for xmlcolor in xmltree:
+        # read color parameters
+        color = Color()
+        color.name       = xmlcolor.attrib["name"]
+        color.foreground = xmlcolor.attrib["foreground"]
+        color.background = xmlcolor.attrib["background"]
+        # add the color
+        addColor(color)
+
+def parseWindows(xmltree):
+    # parse xml
+    for xmlwin in xmltree:
+        # read window parameters
+        if xmlwin.tag != 'window':
+            raise XMLException("Expected 'window' tag, found: " + xmlwin.tag)
+        win = Window()
+        win.name   = xmlwin.attrib["name"]
+        win.width  = xmlwin.attrib["width"]
+        win.height = xmlwin.attrib["height"]
+        win.style  = xmlwin.attrib["style"]
+        win.color  = xmlwin.attrib["color"]
+        if win.style not in ["table", "input", "message"]:
+            raise XMLException("Invalid window style: " + win.style)
+        # read sub-elements of the window
+        for xmlelm in xmlwin:
+            if xmlelm.tag == "title":
+                # title
+                title         = Title()
+                title.text    = xmlelm.attrib["text"]
+                title.color   = xmlelm.attrib["color"]
+                win.elements.append(title)
+            elif xmlelm.tag == "caption":
+                # caption
+                caption       = Caption()
+                caption.text  = xmlelm.attrib["text"]
+                caption.align = xmlelm.attrib["align"]
+                caption.color = xmlelm.attrib["color"]
+                win.elements.append(caption)
+            elif xmlelm.tag == "table":
+                # table
+                table          = Table()
+                table.name     = xmlelm.attrib["name"]
+                table.colnames = xmlelm.attrib["cols"].split(',')
+                table.height   = xmlelm.attrib["height"]
+                table.color    = xmlelm.attrib["color"]
+                win.elements.append(table)
+            elif xmlelm.tag == "field":
+                # field
+                fld = Field()
+                fld.name  = xmlelm.attrib["name"]
+                fld.title = xmlelm.attrib["title"]
+                fld.text  = xmlelm.attrib["text"]
+                fld.width = xmlelm.attrib["width"]
+                fld.color = xmlelm.attrib["color"]
+                win.elements.append(fld)
+            elif xmlelm.tag == "buttonbox":
+                # button box
+                box = ButtonBox()
+                box.name  = xmlelm.attrib["name"]
+                for xmlbtn in xmlelm:
+                    if xmlbtn.tag == "button":
+                        # button
+                        btn = Button()
+                        btn.name   = xmlbtn.attrib["name"]
+                        btn.key    = xmlbtn.attrib["key"]
+                        btn.text   = xmlbtn.attrib["text"]
+                        btn.color  = xmlbtn.attrib["color"]
+                        box.buttons.append(btn)
+                    else:
+                        raise XMLException("Expected 'button': " + btn.tag)
+                win.elements.append(box)
+            else:
+                raise XMLException("Invalid XML tag: " + xmlelm.tag)
+        # add window
+        addWindow(win)
+
+def parse(xmlfile):
+    # parse XML file
+    tree = xml.etree.ElementTree.parse(xmlfile)
+    root = tree.getroot()
+    for rootel in root:
+        if rootel.tag == 'windows':
+            # parse windows
+            parseWindows(rootel)
+        elif rootel.tag == 'colors':
+            # parse colors
+            parseColors(rootel)
+            None
+        else:
+            # error
+            raise XMLException("Expected windows or colors, found: " + rootel.tag)
+
+#################################################################
+#                    Instance Manipulation                      #
+#################################################################
+
+def addWindow(win):
+    # add window to wins directory
+    con.wins[win.name] = win
+
+def addColor(color):
+    # get context vars
+    curses = con.curses
+    wins   = con.wins
+    colors = con.colors
+    # add to colors
+    colors[color.name] = color
+    # color string to curses mapping
+    cursesColors = {"white":   curses.COLOR_WHITE,
+                    "red":     curses.COLOR_RED,
+                    "yellow":  curses.COLOR_YELLOW,
+                    "green":   curses.COLOR_GREEN,
+                    "blue":    curses.COLOR_BLUE,
+                    "cyan":    curses.COLOR_CYAN,
+                    "magenta": curses.COLOR_MAGENTA,
+                    "black":   curses.COLOR_BLACK}
+    # get attributes
+    pairid     = color.pairid
+    foreground = cursesColors[color.foreground]
+    background = cursesColors[color.background]
+    # add to curses
+    curses.init_pair(pairid, foreground, background)
+
+def getWinByName(name):
+    return con.wins[name]
+
+#################################################################
+#                     Library Destruction                       #
+#################################################################
+
+def init():
+    # open a new pipe
+    pipein, pipeout = os.pipe()
+    # store current stderr and the pipe
+    con.olderr  = os.dup(sys.stderr.fileno())
+    con.newerr  = pipein
+    # redirect stderr to the pipe
+    os.dup2(pipeout, sys.stderr.fileno())
+    # write something to the pipe
+    sys.stderr.write("Initializing xmlcurses...\n")
     # initialize curses
-    stdscr = curses.initscr()
+    curses.initscr()
     curses.noecho()
     curses.cbreak()
-    stdscr.keypad(1)
-    # clear screen
-    stdscr.clear()
-    # hide cursor
     curses.curs_set(0)
-    # initialize colors
     curses.start_color()
-    curses.init_pair(1, curses.COLOR_WHITE,  curses.COLOR_BLUE)
-    curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-    curses.init_pair(3, curses.COLOR_GREEN,  curses.COLOR_BLACK)
-    curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-    curses.init_pair(5, curses.COLOR_WHITE,  curses.COLOR_BLACK)
+    # call close on exit
+    atexit.register(close)
 
 def close():
     # reset terminal settings
     curses.endwin()
-
-def setAction(name, func):
-    actions[name] = func
-
-def newWinByName(name):
-    win = Window()
-    win.__dict__ = wins[name].__dict__.copy()
-    win.curses  = curses
-    win.actions = actions
-    return win
+    # write something to the pipe
+    sys.stderr.write("Closing xmlcurses...\n")
+    # redirect stderr to the old one
+    os.close(sys.stderr.fileno())
+    os.dup2(con.olderr, sys.stderr.fileno())
+    # now read & print the messages stored inside the pipe!
+    while True:  
+        data = os.read(con.newerr, 100)
+        sys.stderr.write(data)
+        if len(data) < 100:
+            break
 

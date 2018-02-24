@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
 class Button:
-    text      = ""
     key       = ""
-    action    = ""
-    win       = None
+    text      = ""
+    color     = ""
+    action    = None
+
+    def draw(self, win):
+        return 0
 

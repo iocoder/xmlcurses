@@ -1,9 +1,19 @@
 <xml>
-    <window name="win_msg" width="50" height="7" style="message">
-        <title   text="Message Window Title" />
-        <caption text="This is a caption" align="left" />
-        <button  text="   OK   " key="RET" action="act_ok" />
-        <button  text=" CANCEL " key="ESC" action="act_ca" />
-    </window>
+    <colors>
+        <color name="win"     foreground="white"  background="black" />
+        <color name="title"   foreground="white"  background="blue"  />
+        <color name="caption" foreground="yellow" background="black" />
+        <color name="table"   foreground="green"  background="black" />
+        <color name="field"   foreground="yellow" background="black" />
+        <color name="button"  foreground="white"  background="blue"  />
+    </colors>
+    <windows>
+        <window name="win_msg" width="50" height="7" style="message" color="win">
+            <title   text="Message Window Title" color="title" />
+            <caption text="This is a caption" align="left" color="caption" />
+            <button  text="   OK   " key="RET" action="act_ok" color="button" />
+            <button  text=" CANCEL " key="ESC" action="act_ca" color="button" />
+        </window>
+    </windows>
 </xml>
 
