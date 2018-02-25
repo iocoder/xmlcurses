@@ -3,21 +3,26 @@
 import xmlcurses
 
 # initialize xmlcurses    
-xmlcurses.init("curses.xml")
+xmlcurses.init()
 
-# set actions for OK and CANCEL buttons
-xmlcurses.setAction("act_ok", lambda win: win.hide())
-xmlcurses.setAction("act_ca", lambda win: win.hide())
+# parse xml file
+xmlcurses.parse("curses.xml")
 
-# instantiate window
-win = xmlcurses.newWinByName("win_input")
+# get window instance
+win = xmlcurses.getWinByName("win_input")
+
+# get text fields
+field1 = win.getElementByName("field1")
+field2 = win.getElementByName("field2")
 
 # put initial value for field 2
-win.setField("field2", "initial value")
+field2.text = "initial value"
+
+# set button action
+box = win.getElementByName("box")
+box.setAction("RET", lambda win: [f.setText('') for f in [field1, field2]])
+box.setAction("ESC", lambda win: win.hide())
 
 # show the window
 win.show()
-
-# finalize
-xmlcurses.close()
 

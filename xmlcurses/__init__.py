@@ -2,6 +2,7 @@
 
 # external libraries and modules
 import curses
+import curses.textpad
 import xml.etree.ElementTree
 import atexit
 import os
@@ -19,7 +20,6 @@ from cap import Caption
 from tbl import Table
 from fld import Field
 from box import ButtonBox
-from btn import Button
 
 # errors
 from err import XMLException
@@ -44,7 +44,6 @@ Caption.con   = con
 Table.con     = con
 Field.con     = con
 ButtonBox.con = con
-Button.con    = con
 
 #################################################################
 #                         XML Parsing                           #
@@ -82,14 +81,14 @@ def parseWindows(xmltree):
                 title         = Title()
                 title.text    = xmlelm.attrib["text"]
                 title.color   = xmlelm.attrib["color"]
-                win.elements.append(title)
+                win.addElement(title)
             elif xmlelm.tag == "caption":
                 # caption
                 caption       = Caption()
                 caption.text  = xmlelm.attrib["text"]
                 caption.align = xmlelm.attrib["align"]
                 caption.color = xmlelm.attrib["color"]
-                win.elements.append(caption)
+                win.addElement(caption)
             elif xmlelm.tag == "table":
                 # table
                 table          = Table()
@@ -97,7 +96,7 @@ def parseWindows(xmltree):
                 table.colnames = xmlelm.attrib["cols"].split(',')
                 table.height   = xmlelm.attrib["height"]
                 table.color    = xmlelm.attrib["color"]
-                win.elements.append(table)
+                win.addElement(table)
             elif xmlelm.tag == "field":
                 # field
                 fld = Field()
@@ -106,23 +105,21 @@ def parseWindows(xmltree):
                 fld.text  = xmlelm.attrib["text"]
                 fld.width = xmlelm.attrib["width"]
                 fld.color = xmlelm.attrib["color"]
-                win.elements.append(fld)
+                win.addElement(fld)
             elif xmlelm.tag == "buttonbox":
                 # button box
                 box = ButtonBox()
                 box.name  = xmlelm.attrib["name"]
+                box.color = xmlelm.attrib["color"]
                 for xmlbtn in xmlelm:
                     if xmlbtn.tag == "button":
                         # button
-                        btn = Button()
-                        btn.name   = xmlbtn.attrib["name"]
-                        btn.key    = xmlbtn.attrib["key"]
-                        btn.text   = xmlbtn.attrib["text"]
-                        btn.color  = xmlbtn.attrib["color"]
-                        box.buttons.append(btn)
+                        btn_key    = xmlbtn.attrib["key"]
+                        btn_text   = xmlbtn.attrib["text"]
+                        box.addButton(btn_key, btn_text)
                     else:
                         raise XMLException("Expected 'button': " + btn.tag)
-                win.elements.append(box)
+                win.addElement(box)
             else:
                 raise XMLException("Invalid XML tag: " + xmlelm.tag)
         # add window

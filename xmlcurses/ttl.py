@@ -3,33 +3,54 @@
 import sys
 
 class Title:
+
+    # context
     con       = None
+    # attributes
     name      = ""
     text      = ""
     color     = ""
+    # parent
+    win       = None
+    # focus
+    focusable = False
 
-    def draw(self, win):
+    def draw(self):
         # get context variables
         curses = self.con.curses
         wins   = self.con.wins
         colors = self.con.colors
-        # get window size
+        # get parent window
+        win    = self.win
+        # get parent window size
         rows, cols = win.curswin.getmaxyx()
-        # get title parameters
-        line  = win.curline
+        # find first line to draw the element at
+        els = win.elements
+        firstline = 1+sum(el.getLines() for el in els[0:els.index(self)])
+        # move cursor to firstline
+        win.curswin.move(firstline, 1)
+        # get title text
         text  = ("{:^%d}"%(cols-2)).format(self.text)
+        # get title color
         color = curses.color_pair(colors[self.color].pairid)
         flags = curses.A_BOLD
         # print the title
-        win.curswin.addstr(line, 1, text, color|flags)
-        # done
-        return 1
+        win.curswin.addstr(text, color|flags)
 
-    def getHeight(self):
+    def getLines(self):
         # only 1 line
         return 1
 
-    def refresh(self):
-        # no sub-windows to refresh
+    def setFocus(self):
+        # non-focusable
         None
+
+    def clearFocus(self):
+        # non-focusable
+        None
+
+    # process keyboard input
+    def keyPress(self, char):
+        # do nothing
+        pass
 
