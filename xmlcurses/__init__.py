@@ -52,6 +52,9 @@ ButtonBox.con = con
 def parseColors(xmltree):
     # parse xml
     for xmlcolor in xmltree:
+        # check the validity of the XML tag
+        if xmlcolor.tag != 'color':
+            raise XMLException("Expected 'color' tag, found: " + xmlcolor.tag)
         # read color parameters
         color = Color()
         color.name       = xmlcolor.attrib["name"]
@@ -63,17 +66,15 @@ def parseColors(xmltree):
 def parseWindows(xmltree):
     # parse xml
     for xmlwin in xmltree:
-        # read window parameters
+        # check the validity of the XML tag
         if xmlwin.tag != 'window':
             raise XMLException("Expected 'window' tag, found: " + xmlwin.tag)
+        # read window parameters
         win = Window()
         win.name   = xmlwin.attrib["name"]
         win.width  = xmlwin.attrib["width"]
         win.height = xmlwin.attrib["height"]
-        win.style  = xmlwin.attrib["style"]
         win.color  = xmlwin.attrib["color"]
-        if win.style not in ["table", "input", "message"]:
-            raise XMLException("Invalid window style: " + win.style)
         # read sub-elements of the window
         for xmlelm in xmlwin:
             if xmlelm.tag == "title":
@@ -113,15 +114,14 @@ def parseWindows(xmltree):
                 box.color = xmlelm.attrib["color"]
                 for xmlbtn in xmlelm:
                     if xmlbtn.tag == "button":
-                        # button
                         btn_key    = xmlbtn.attrib["key"]
                         btn_text   = xmlbtn.attrib["text"]
                         box.addButton(btn_key, btn_text)
                     else:
-                        raise XMLException("Expected 'button': " + btn.tag)
+                        raise XMLException("Expected 'button' tag: " + btn.tag)
                 win.addElement(box)
             else:
-                raise XMLException("Invalid XML tag: " + xmlelm.tag)
+                raise XMLException("Invalid element tag: " + xmlelm.tag)
         # add window
         addWindow(win)
 
@@ -139,7 +139,7 @@ def parse(xmlfile):
             None
         else:
             # error
-            raise XMLException("Expected windows or colors, found: " + rootel.tag)
+            raise XMLException("Expected 'windows' or 'colors' tag: " + rootel.tag)
 
 #################################################################
 #                    Instance Manipulation                      #

@@ -64,6 +64,10 @@ class Field:
         # only 1 line
         return 1
 
+    def refresh(self):
+        # refresh subwindows
+        self.txtwin.refresh()
+
     def setFocus(self):
         # get context variables
         curses = self.con.curses
@@ -73,8 +77,6 @@ class Field:
         curses.curs_set(1)
         # refresh textbox
         self.txtwin.refresh()
-        # update cursor location
-        self.txtwin.cursyncup()
         # set onFocus flag
         self.onFocus = True
 
@@ -102,12 +104,9 @@ class Field:
     def setText(self, text):
         # set text attribute
         self.text = text
-        # clear txtwin content
-        self.txtwin.clear()
-        # update txtwin content
-        self.txtwin.addstr(text)
-        # refresh textbox
-        self.txtwin.refresh()
+        # redraw if needed
+        if self.txtwin != None:
+            self.draw()
 
     # get text
     def getText(self):

@@ -8,10 +8,9 @@
         <color name="button"  foreground="white"  background="blue"  />
     </colors>
     <windows>
-        <window name="win_input" width="50%" height="10" style="input" color="win">
+        <window name="win_input" width="50%" height="10" color="win">
 
             <title   text="Input Window Title" color="title" />
-
 
             <caption text=""                    align="left" color="caption" />
             <caption text=" This is a caption " align="left" color="caption" />

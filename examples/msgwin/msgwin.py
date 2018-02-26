@@ -3,18 +3,17 @@
 import xmlcurses
 
 # initialize xmlcurses    
-xmlcurses.init("curses.xml")
+xmlcurses.init()
 
-# set actions for OK and CANCEL buttons
-xmlcurses.setAction("act_ok", lambda win: win.hide())
-xmlcurses.setAction("act_ca", lambda win: win.hide())
+# parse xml file
+xmlcurses.parse("curses.xml")
 
 # instantiate window
-win = xmlcurses.newWinByName("win_msg")
+win = xmlcurses.getWinByName("win_msg")
+
+# set button actions
+win.getElementByName("box").setAction("RET", lambda win: win.hide())
 
 # show the window
 win.show()
-
-# finalize
-xmlcurses.close()
 

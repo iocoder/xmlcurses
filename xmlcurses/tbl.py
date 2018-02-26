@@ -3,19 +3,20 @@
 class Table:
 
     # context
-    con      = None
+    con       = None
     # attributes
-    name     = ""
-    colnames = []
-    height   = ""
-    color    = ""
+    name      = ""
+    colnames  = []
+    height    = ""
+    color     = ""
     # parent
-    win      = None
+    win       = None
     # focus
     focusable = False
     # internal
-    selrow   = -1
-    rowdata  = []
+    drawn     = False
+    selrow    = -1
+    rowdata   = []
 
     def draw(self):
         # get context variables
@@ -29,12 +30,6 @@ class Table:
         # find first line to draw the element at
         els = win.elements
         firstline = 1+sum(el.getLines() for el in els[0:els.index(self)])
-        # new data inserted?
-        if (self.selrow < 0 and len(self.rowdata) > 0):
-            self.selrow = 0
-        # data removed?
-        if (self.selrow > len(self.rowdata)-1):
-            self.selrow = len(self.rowdata)-1
         # get colors
         hcolor = curses.color_pair(colors[win.color ].pairid)
         rcolor = curses.color_pair(colors[self.color].pairid)
@@ -83,24 +78,39 @@ class Table:
                     break
             # finshed one row
             cur_row = cur_row + 1
+        # draw empty lines for next lines
+        for i in range(0, self.getLines()-3-cur_row):
+            win.curswin.move(firstline+3+cur_row+i, 1)
+            win.curswin.addstr(" " * (cols-2))
+            
+        # done
+        self.drawn = True
 
     # get table height (including header)
     def getLines(self):
+        # get context variables
+        curses = self.con.curses
+        wins   = self.con.wins
+        colors = self.con.colors
+        # get parent window
+        win    = self.win
+        # get parent window size
+        rows, cols = win.curswin.getmaxyx()
         # calculate lines
         if (self.height[-1] == "%"):
             available = rows-2
-            # calculate the percentage out of
-            # the remaining space in the parent
-            # window.
-            for el in win.elements:
-                if (el.getHeight() > 0):
-                    available -= el.getHeight()
+            # calculate the percentage using
+            # parent window size
             lines = int(self.height[:-1])*(available)/100
             # add header
             lines += 3
         else:
             lines = int(self.height)+3
         return lines
+
+    def refresh(self):
+        # refresh subwindows
+        pass
 
     def setFocus(self):
         # non-focusable
@@ -125,8 +135,46 @@ class Table:
             # select previous row
             if (self.selrow > 0):
                 self.selrow = self.selrow-1
+        # redraw if needed
+        if self.drawn:
+            self.draw()
+
+    # get current selected row
+    def getSelRowIndex(self):
+        return self.selrow
 
     # add row to table
     def addRow(self, row):
+        # append
         self.rowdata.append(row)
+        # update selrow
+        if (self.selrow < 0):
+            self.selrow = 0
+        # redraw if needed
+        if self.drawn:
+            self.draw()
+
+    # update row data
+    def setRow(self, indx, row):
+        # update
+        self.rowdata[indx] = row
+        # redraw if needed
+        if self.drawn:
+            self.draw()
+
+    # get row data
+    def getRow(self, indx):
+        # return the row
+        return self.rowdata[indx]
+
+    # delete row at index
+    def delRow(self, indx):
+        # delete a row
+        self.rowdata.remove(self.rowdata[indx])
+        # update selrow
+        if (self.selrow > len(self.rowdata)-1):
+            self.selrow = len(self.rowdata)-1
+        # redraw if needed
+        if self.drawn:
+            self.draw()
 

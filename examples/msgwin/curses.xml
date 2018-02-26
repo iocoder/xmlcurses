@@ -8,11 +8,18 @@
         <color name="button"  foreground="white"  background="blue"  />
     </colors>
     <windows>
-        <window name="win_msg" width="50" height="7" style="message" color="win">
+        <window name="win_msg" width="50" height="7" color="win">
+
             <title   text="Message Window Title" color="title" />
-            <caption text="This is a caption" align="left" color="caption" />
-            <button  text="   OK   " key="RET" action="act_ok" color="button" />
-            <button  text=" CANCEL " key="ESC" action="act_ca" color="button" />
+
+            <caption text=""                    align="left" color="caption" />
+            <caption text=" This is a caption " align="left" color="caption" />
+            <caption text=""                    align="left" color="caption" />
+            
+            <buttonbox name="box" color="button">
+                <button key="RET" text="   OK   " />
+            </buttonbox>
+
         </window>
     </windows>
 </xml>

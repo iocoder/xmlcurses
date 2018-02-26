@@ -41,6 +41,10 @@ class Title:
         # only 1 line
         return 1
 
+    def refresh(self):
+        # refresh subwindows
+        pass
+
     def setFocus(self):
         # non-focusable
         None

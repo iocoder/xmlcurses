@@ -8,21 +8,24 @@
         <color name="button"  foreground="white"  background="blue"  />
     </colors>
     <windows>
-        <window name="win_table" width="100%" height="100%" style="table" color="win">
+        <window name="win_table" width="100%" height="100%" color="win">
+
             <title   text="Table Window Title"                color="title" />
 
             <caption text=""                    align="left"  color="caption" />
             <caption text=" This is a caption " align="left"  color="caption" />
             <caption text=""                    align="left"  color="caption" />
 
-            <table   name="tbl" cols="A,B,C,D"  height="100%" color="table" />
+            <table   name="tbl" cols="A,B,C,D"  height="60%" color="table" />
 
             <caption text=""                    align="left"  color="caption" />
 
-            <buttonbox name="box">
-                <button name="ok" key="RET" text="   OK   " color="button" />
-                <button name="ca" key="ESC" text=" CANCEL " color="button" />
+            <buttonbox name="box" color="button">
+                <button key="A" text="  ADD   " />
+                <button key="D" text=" DELETE " />
+                <button key="Q" text="  QUIT  " />
             </buttonbox>
+
         </window>
     </windows>
 </xml>

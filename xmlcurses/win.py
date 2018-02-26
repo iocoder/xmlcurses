@@ -48,14 +48,7 @@ class Window:
         # calculate y
         winy = (totlines-rows)/2
         # create window
-        self.curswin = curses.newwin(rows, cols, winy, winx)
-        # find focusable elements
-        focusable = []
-        focusid   = -1
-        for element in self.elements:
-            if element.__class__.__name__ in ["Table", "Field"]:
-                focusable.append(element)
-                focusid = 0        
+        self.curswin = curses.newwin(rows, cols, winy, winx)       
         # clear window
         self.curswin.clear()   
         # hide cursor by default
@@ -71,20 +64,24 @@ class Window:
         # draw elements
         for element in self.elements:
             element.draw()
-        # refresh window
-        self.curswin.refresh()
         # any focusable element?
         focusable = []
+        curfocus = 0
         for element in self.elements:
             if element.focusable:
                 focusable.append(element)
-        if len(focusable) > 0:
-            curfocus = 0
-            focusable[curfocus].setFocus()
         # clear hide attribute
         self.hideFlag = False
         # process input
         while not self.hideFlag:
+            # refresh window
+            self.curswin.refresh()
+            # refresh subelements
+            for element in self.elements:
+                element.refresh()
+            # set focus on the focused element
+            if len(focusable) > 0:
+                focusable[curfocus].setFocus()
             # wait for keyboard input
             char = self.curswin.getch()
             # process keyboard input
@@ -96,15 +93,10 @@ class Window:
                     # get next focusable element
                     focusable[curfocus].clearFocus()
                     curfocus = (curfocus + 1) % len(focusable)
-                    focusable[curfocus].setFocus()
                 elif char == curses.KEY_BTAB:
                     # get prev focusable element
                     focusable[curfocus].clearFocus()
                     curfocus = (curfocus - 1) % len(focusable)
-                    focusable[curfocus].setFocus()
-                else:
-                    # reserve the focus
-                    focusable[curfocus].setFocus()
         # clear focus
         if len(focusable) > 0:
             focusable[curfocus].clearFocus()

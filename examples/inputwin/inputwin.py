@@ -16,9 +16,9 @@ field1 = win.getElementByName("field1")
 field2 = win.getElementByName("field2")
 
 # put initial value for field 2
-field2.text = "initial value"
+field2.setText("initial value")
 
-# set button action
+# set button actions
 box = win.getElementByName("box")
 box.setAction("RET", lambda win: [f.setText('') for f in [field1, field2]])
 box.setAction("ESC", lambda win: win.hide())
