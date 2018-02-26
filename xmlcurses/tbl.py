@@ -16,6 +16,7 @@ class Table:
     # internal
     drawn     = False
     selrow    = -1
+    firstrow  = 0
     rowdata   = []
 
     def draw(self):
@@ -49,13 +50,20 @@ class Table:
         win.curswin.hline(firstline+2, 0,      curses.ACS_LTEE,  1)
         win.curswin.hline(firstline+2, 1,      curses.ACS_HLINE, cols-2)
         win.curswin.hline(firstline+2, cols-1, curses.ACS_RTEE,  1)
+        # find how many rows to draw
+        firstrow  = self.firstrow
+        winsize   = self.getLines()-4
+        lastrow   = min(firstrow+winsize,len(self.rowdata))
+        sparerows = firstrow+winsize-lastrow
         # print rows
         cur_row = 0
-        for row in self.rowdata:
+        for indx in range(firstrow, lastrow):
+            # fetch row
+            row = self.rowdata[indx]
             # move to row line
             win.curswin.move(firstline+3+cur_row, 1)
             # initialize color
-            if (cur_row == self.selrow):
+            if (indx == self.selrow):
                 # selected row
                 color = rcolor|hflags
             else:
@@ -78,11 +86,35 @@ class Table:
                     break
             # finshed one row
             cur_row = cur_row + 1
-        # draw empty lines for next lines
-        for i in range(0, self.getLines()-3-cur_row):
+        # draw empty lines
+        for i in range(0, sparerows):
             win.curswin.move(firstline+3+cur_row+i, 1)
             win.curswin.addstr(" " * (cols-2))
-            
+        # calculate scroll line parameters
+        scrollline = firstline+3+cur_row+sparerows
+        if (len(self.rowdata) == 0):
+            before = 0
+            shown  = cols-2
+            after  = 0
+        else:
+            before = firstrow*(cols-2)/len(self.rowdata)
+            shown  = (lastrow-firstrow)*(cols-2)/len(self.rowdata)
+            if (shown < 3):
+                shown = 3
+                if (before+shown > cols-2):
+                    before = cols-2-shown
+            after  = cols-2-shown-before
+            if lastrow == len(self.rowdata):
+                shown += after
+                after = 0        
+        # print before
+        win.curswin.hline(scrollline,  0,                    curses.ACS_LTEE,  1)
+        win.curswin.hline(scrollline,  1,                    curses.ACS_HLINE, before)
+        # print the shown part
+        win.curswin.addstr(scrollline, 1+before, "[" + "="*(shown-2) + "]")        
+        # print after
+        win.curswin.hline(scrollline,  1+before+shown,       curses.ACS_HLINE, after)
+        win.curswin.hline(scrollline,  1+before+shown+after, curses.ACS_RTEE,  1)
         # done
         self.drawn = True
 
@@ -98,14 +130,13 @@ class Table:
         rows, cols = win.curswin.getmaxyx()
         # calculate lines
         if (self.height[-1] == "%"):
-            available = rows-2
             # calculate the percentage using
             # parent window size
-            lines = int(self.height[:-1])*(available)/100
-            # add header
-            lines += 3
+            lines = int(self.height[:-1])*(rows-2)/100
         else:
-            lines = int(self.height)+3
+            lines = int(self.height)
+        if (lines < 5):
+            lines = 5 # minimum 5
         return lines
 
     def refresh(self):
@@ -131,10 +162,16 @@ class Table:
             # select next row
             if (self.selrow < len(self.rowdata) - 1):
                 self.selrow = self.selrow+1
+                # update window boundaries
+                if (self.selrow >= self.firstrow+self.getLines()-4):
+                    self.firstrow += 1
         elif (char == curses.KEY_UP):
             # select previous row
             if (self.selrow > 0):
                 self.selrow = self.selrow-1
+                # update window boundaries
+                if (self.selrow < self.firstrow):
+                    self.firstrow -= 1
         # redraw if needed
         if self.drawn:
             self.draw()
@@ -171,6 +208,9 @@ class Table:
     def delRow(self, indx):
         # delete a row
         self.rowdata.remove(self.rowdata[indx])
+        # update window boundaries
+        if (self.selrow > 0 and self.selrow == self.firstrow):
+            self.firstrow -= 1
         # update selrow
         if (self.selrow > len(self.rowdata)-1):
             self.selrow = len(self.rowdata)-1

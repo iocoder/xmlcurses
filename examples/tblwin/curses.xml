@@ -16,7 +16,7 @@
             <caption text=" This is a caption " align="left"  color="caption" />
             <caption text=""                    align="left"  color="caption" />
 
-            <table   name="tbl" cols="A,B,C,D"  height="60%" color="table" />
+            <table   name="tbl" cols="A,B,C,D"  height="70%" color="table" />
 
             <caption text=""                    align="left"  color="caption" />
 

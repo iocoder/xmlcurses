@@ -2,6 +2,18 @@
 
 import xmlcurses
 
+# generate numbers
+seq = 0
+def gen_num():
+   global seq
+   seq += 1
+   return "%03d" % seq 
+
+# generate row
+def gen_row():
+    return {"A": gen_num(), "B": gen_num(), 
+            "C": gen_num(), "D": gen_num()}
+
 # initialize xmlcurses
 xmlcurses.init()
 
@@ -13,14 +25,13 @@ win = xmlcurses.getWinByName("win_table")
 
 # get the table
 tbl = win.getElementByName("tbl")
-row = {"A": "000", "B": "001", "C": "002", "D": "003"}
-tbl.addRow(row)
-tbl.addRow(row)
-tbl.addRow(row)
+tbl.addRow(gen_row())
+tbl.addRow(gen_row())
+tbl.addRow(gen_row())
 
 # set button action
 box = win.getElementByName("box")
-box.setAction("A", lambda win: tbl.addRow(row))
+box.setAction("A", lambda win: tbl.addRow(gen_row()))
 box.setAction("D", lambda win: tbl.delRow(tbl.getSelRowIndex()))
 box.setAction("Q", lambda win: win.hide())
 
