@@ -75,24 +75,24 @@ class Window:
         for element in self.elements:
             if element.height[-1] == "%":
                 element.height = str(int(element.height[:-1])*available/100)
-        # draw elements
-        for element in self.elements:
-            element.draw()
         # any focusable element?
         focusable = []
         curfocus = 0
         for element in self.elements:
             if element.focusable:
                 focusable.append(element)
+        # draw elements
+        for element in self.elements:
+            element.draw()
+        # refresh window
+        self.curswin.refresh()
+        # refresh subelements
+        for element in self.elements:
+            element.refresh()
         # clear hide attribute
         self.hideFlag = False
         # process input
         while not self.hideFlag:
-            # refresh window
-            self.curswin.refresh()
-            # refresh subelements
-            for element in self.elements:
-                element.refresh()
             # set focus on the focused element
             if len(focusable) > 0:
                 focusable[curfocus].setFocus()
@@ -118,6 +118,17 @@ class Window:
     # hide window
     def hide(self):
         self.hideFlag = True
+
+    # redraw window
+    def redraw(self):
+        # draw elements
+        for element in self.elements:
+            element.draw()
+        # refresh window
+        self.curswin.refresh()
+        # refresh subelements
+        for element in self.elements:
+            element.refresh()
 
     # get sub-element by name
     def getElementByName(self, name):

@@ -2,28 +2,28 @@
     <windows>
         <window name="WinEditPeriod" width="50%" height="12" color="win">
 
-            <title   text="Edit Period" color="title" />
+            <title name="" text="Edit Period" color="title" />
 
-            <caption text="" align="left" color="caption" />
+            <caption name="" text="" align="left" color="caption" />
 
-            <caption text=" Enter period info: " align="left" color="caption" />
+            <caption name="" text=" Enter period info: " align="left" color="caption" />
 
-            <caption text="" align="left" color="caption" />
+            <caption name="" text="" align="left" color="caption" />
 
             <field   name="firstday" title="FIRSTDAY:" text="" width="100%" color="field" />
 
-            <caption text="" align="left" color="caption" />
+            <caption name="" text="" align="left" color="caption" />
 
             <field   name="lastday"  title="LASTDAY: " text="" width="100%" color="field" />
 
-            <caption text="" align="left" color="caption" />
+            <caption name="" text="" align="left" color="caption" />
 
             <buttonbox name="box" color="button">
                 <button key="RET" text="   OK   " />
                 <button key="ESC" text=" CANCEL " />
             </buttonbox>
 
-            <caption text="" align="left" color="caption" />
+            <caption name="" text="" align="left" color="caption" />
 
         </window>
     </windows>

@@ -15,11 +15,25 @@ class WinPeriods(Window):
         for row in allrows:
             self.tblPeriods.addRow(row)        
 
+    def onSelPressed(self):
+        # get selected row index
+        selRow = self.tblPeriods.getSelRowIndex()
+        # fetch row data
+        row = self.tblPeriods.getRow(selRow)
+        # update transaction window with selected period
+        self.con["winTransacts"].setPeriod(row["FIRSTDAY"], row["LASTDAY"])
+        # show transaction window
+        self.con["winTransacts"].show()
+        # quit
+        self.win.hide()
+
     def onAddPressed(self):
         # show add-period window
         self.con["winAddPeriod"].show()
         # synchronize local table with database
         self.syncTable()
+        # redraw window
+        self.win.redraw()
 
     def onEditPressed(self):
         # get selected row index
@@ -34,6 +48,8 @@ class WinPeriods(Window):
         row = self.con["session"].getPeriod(row["ID"])
         # updat row in table
         self.tblPeriods.setRow(selRow, row)
+        # redraw window
+        self.win.redraw()
 
     def onDelPressed(self):
         # get selected row index
@@ -44,6 +60,8 @@ class WinPeriods(Window):
         row = self.con["session"].delPeriod(row["ID"])
         # updat row in table
         self.tblPeriods.delRow(selRow)
+        # redraw window
+        self.win.redraw()
 
     def onQuitPressed(self):
         # hide this window
@@ -55,6 +73,7 @@ class WinPeriods(Window):
         # get table
         self.tblPeriods = self.win.getElementByName("tbl")
         # register handlers
+        self.win.getElementByName("box").setAction("S", lambda: self.onSelPressed())
         self.win.getElementByName("box").setAction("A", lambda: self.onAddPressed())
         self.win.getElementByName("box").setAction("E", lambda: self.onEditPressed())
         self.win.getElementByName("box").setAction("D", lambda: self.onDelPressed())

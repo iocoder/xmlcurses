@@ -14,10 +14,10 @@ class Table:
     # focus
     focusable = False
     # internal
-    drawn     = False
     selrow    = -1
     firstrow  = 0
     rowdata   = None
+    drawn     = False
 
     def __init__(self):
         # initialize
@@ -160,6 +160,9 @@ class Table:
                 # update window boundaries
                 if (self.selrow >= self.firstrow+height-4):
                     self.firstrow += 1
+                # redraw window if needed
+                if self.drawn:
+                    self.win.redraw()
         elif (char == curses.KEY_UP):
             # select previous row
             if (self.selrow > 0):
@@ -167,9 +170,9 @@ class Table:
                 # update window boundaries
                 if (self.selrow < self.firstrow):
                     self.firstrow -= 1
-        # redraw if needed
-        if self.drawn:
-            self.draw()
+                # redraw window if needed
+                if self.drawn:
+                    self.win.redraw()
 
     # get current selected row
     def getSelRowIndex(self):
@@ -188,9 +191,9 @@ class Table:
             self.firstrow += 1
         if (self.selrow < self.firstrow):
             self.firstrow -= 1
-        # redraw if needed
+        # redraw window if needed
         if self.drawn:
-            self.draw()
+            self.win.redraw()
 
     # add row to table
     def addRow(self, row):
@@ -199,17 +202,17 @@ class Table:
         # update selrow
         if (self.selrow < 0):
             self.selrow = 0
-        # redraw if needed
+        # redraw window if needed
         if self.drawn:
-            self.draw()
+            self.win.redraw()
 
     # update row data
     def setRow(self, indx, row):
         # update
         self.rowdata[indx] = row
-        # redraw if needed
+        # redraw window if needed
         if self.drawn:
-            self.draw()
+            self.win.redraw()
 
     # get row data
     def getRow(self, indx):
@@ -226,9 +229,9 @@ class Table:
         # update selrow
         if (self.selrow > len(self.rowdata)-1):
             self.selrow = len(self.rowdata)-1
-        # redraw if needed
+        # redraw window if needed
         if self.drawn:
-            self.draw()
+            self.win.redraw()
 
     # delete all rows
     def delAllRows(self):
@@ -238,7 +241,7 @@ class Table:
         self.firstrow = 0
         # update selrow
         self.selrow = -1
-        # redraw if needed
+        # redraw window if needed
         if self.drawn:
-            self.draw()
+            self.win.redraw()
 

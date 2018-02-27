@@ -10,11 +10,13 @@
     <windows>
         <window name="win_msg" width="50" height="7" color="win">
 
-            <title   text="Message Window Title" color="title" />
+            <title name="" text="Message Window Title" color="title" />
 
-            <caption text=""                    align="left" color="caption" />
-            <caption text=" This is a caption " align="left" color="caption" />
-            <caption text=""                    align="left" color="caption" />
+            <caption name="" text="" align="left" color="caption" />
+
+            <caption name= "msg" text=" This is a caption " align="left" color="caption" />
+
+            <caption name="" text="" align="left" color="caption" />
             
             <buttonbox name="box" color="button">
                 <button key="RET" text="   OK   " />

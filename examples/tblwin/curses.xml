@@ -10,15 +10,17 @@
     <windows>
         <window name="win_table" width="100%" height="100%" color="win">
 
-            <title   text="Table Window Title"                color="title" />
+            <title   name="" text="Table Window Title" color="title" />
 
-            <caption text=""                    align="left"  color="caption" />
-            <caption text=" This is a caption " align="left"  color="caption" />
-            <caption text=""                    align="left"  color="caption" />
+            <caption name="" text="" align="left" color="caption" />
+
+            <caption name="" text=" This is a caption " align="left" color="caption" />
+
+            <caption name="" text="" align="left"  color="caption" />
 
             <table   name="tbl" cols="A,B,C,D"  height="100%" color="table" />
 
-            <caption text=""                    align="left"  color="caption" />
+            <caption name="" text="" align="left" color="caption" />
 
             <buttonbox name="box" color="button">
                 <button key="A" text="  ADD   " />
@@ -26,7 +28,7 @@
                 <button key="Q" text="  QUIT  " />
             </buttonbox>
 
-            <caption text=""                    align="left"  color="caption" />
+            <caption name="" text="" align="left" color="caption" />
 
         </window>
     </windows>

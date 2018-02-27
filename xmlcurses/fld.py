@@ -19,6 +19,7 @@ class Field:
     txtwin    = None
     txtbox    = None
     onFocus   = False
+    cursor    = (0, 0)
 
     def draw(self):
         # get context variables
@@ -72,6 +73,8 @@ class Field:
         colors = self.con.colors
         # show cursor 
         curses.curs_set(1)
+        # restore cursor location
+        self.txtwin.move(self.cursor[0], self.cursor[1])
         # refresh textbox
         self.txtwin.refresh()
         # set onFocus flag
@@ -94,21 +97,20 @@ class Field:
         if self.onFocus == True:
             # perform key stroke
             self.txtbox.do_command(char)
+            # store cursor location
+            self.cursor = self.txtwin.getyx()
             # refresh the curses window
             self.txtwin.refresh()
+            # update text attribute
+            self.text = self.txtbox.gather().strip()
 
     # set text
     def setText(self, text):
         # set text attribute
         self.text = text
-        # redraw if needed
-        if self.txtwin != None:
-            self.draw()
 
     # get text
     def getText(self):
-        # update text attribute
-        self.text = self.txtbox.gather().strip()
         # return text attribute
         return self.text
 

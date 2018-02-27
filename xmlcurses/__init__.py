@@ -80,12 +80,14 @@ def parseWindows(xmltree):
             if xmlelm.tag == "title":
                 # title
                 title         = Title()
+                title.name    = xmlelm.attrib["name"]
                 title.text    = xmlelm.attrib["text"]
                 title.color   = xmlelm.attrib["color"]
                 win.addElement(title)
             elif xmlelm.tag == "caption":
                 # caption
                 caption       = Caption()
+                caption.name  = xmlelm.attrib["name"]
                 caption.text  = xmlelm.attrib["text"]
                 caption.align = xmlelm.attrib["align"]
                 caption.color = xmlelm.attrib["color"]
