@@ -20,8 +20,8 @@ field2.setText("initial value")
 
 # set button actions
 box = win.getElementByName("box")
-box.setAction("RET", lambda win: [f.setText('') for f in [field1, field2]])
-box.setAction("ESC", lambda win: win.hide())
+box.setAction("RET", lambda: [f.setText('') for f in [field1, field2]])
+box.setAction("ESC", lambda: win.hide())
 
 # show the window
 win.show()

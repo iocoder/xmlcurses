@@ -12,7 +12,7 @@ xmlcurses.parse("curses.xml")
 win = xmlcurses.getWinByName("win_msg")
 
 # set button actions
-win.getElementByName("box").setAction("RET", lambda win: win.hide())
+win.getElementByName("box").setAction("RET", lambda: win.hide())
 
 # show the window
 win.show()

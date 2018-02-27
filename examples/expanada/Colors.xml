@@ -1,0 +1,12 @@
+<xml>
+    <colors>
+        <color name="win"     foreground="white"  background="black" />
+        <color name="title"   foreground="white"  background="blue"  />
+        <color name="logo"    foreground="green"  background="black" />
+        <color name="caption" foreground="yellow" background="black" />
+        <color name="table"   foreground="green"  background="black" />
+        <color name="field"   foreground="cyan"   background="black" />
+        <color name="button"  foreground="white"  background="blue"  />
+    </colors>
+</xml>
+

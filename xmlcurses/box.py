@@ -6,13 +6,19 @@ class ButtonBox:
     con       = None
     # attributes
     name      = ""
-    buttons   = []
+    height    = "1"
+    buttons   = None
     # parent
     win       = None
     # focus
     focusable = False
     # internal
-    actions   = {}
+    actions   = None
+
+    def __init__(self):
+        # initialize
+        self.buttons = []
+        self.actions = {}
 
     def draw(self):
         # get context variables
@@ -27,14 +33,14 @@ class ButtonBox:
         oldy, oldx = win.curswin.getyx()
         # find first line to draw the element at
         els = win.elements
-        firstline = 1+sum(el.getLines() for el in els[0:els.index(self)])
+        firstline = 1+sum(int(el.height) for el in els[0:els.index(self)])
         # move cursor to firstline
         win.curswin.move(firstline, 1)
         # print padding
         btnswidth = 0
         for btn in self.buttons:
             btnswidth += len(btn["key"]) + len(btn["text"]) + 2
-        spaces  = " " * ((cols-btnswidth)/2)
+        spaces  = " " * ((cols-2-btnswidth)/2)
         win.curswin.addstr(spaces)
         # print buttons
         for btn in self.buttons:
@@ -52,10 +58,6 @@ class ButtonBox:
             win.curswin.addstr(" ", kcolor|flags)
         # restore cursor location
         win.curswin.move(oldy, oldx)
-
-    def getLines(self):
-        # only 1 line
-        return 1
 
     def refresh(self):
         # refresh subwindows
@@ -81,10 +83,13 @@ class ButtonBox:
         else:
             return
         # execute action
+        action = None
         try:
-            self.actions[key.lower()](self.win)
+            action = self.actions[key.lower()]
         except:
             pass
+        if action != None:
+            action()
 
     # add button
     def addButton(self, key, text):

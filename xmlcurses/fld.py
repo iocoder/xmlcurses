@@ -6,6 +6,7 @@ class Field:
     con       = None
     # attributes
     name      = ""
+    height    = "1"
     title     = ""
     text      = ""
     width     = ""
@@ -30,7 +31,7 @@ class Field:
         rows, cols = win.curswin.getmaxyx()
         # find first line to draw the element at
         els = win.elements
-        firstline = 1+sum(el.getLines() for el in els[0:els.index(self)])
+        firstline = 1+sum(int(el.height) for el in els[0:els.index(self)])
         # calculate field's title width
         titlewidth = len(self.title)+1
         # calculate textbox width
@@ -59,10 +60,6 @@ class Field:
         self.txtwin.addstr(self.text)
         # create an editable box over the window
         self.txtbox = curses.textpad.Textbox(self.txtwin)
-
-    def getLines(self):
-        # only 1 line
-        return 1
 
     def refresh(self):
         # refresh subwindows

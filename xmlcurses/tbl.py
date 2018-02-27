@@ -6,7 +6,7 @@ class Table:
     con       = None
     # attributes
     name      = ""
-    colnames  = []
+    colnames  = None
     height    = ""
     color     = ""
     # parent
@@ -17,7 +17,12 @@ class Table:
     drawn     = False
     selrow    = -1
     firstrow  = 0
-    rowdata   = []
+    rowdata   = None
+
+    def __init__(self):
+        # initialize
+        self.colnames = []
+        self.rowdata  = []
 
     def draw(self):
         # get context variables
@@ -30,12 +35,16 @@ class Table:
         rows, cols = win.curswin.getmaxyx()
         # find first line to draw the element at
         els = win.elements
-        firstline = 1+sum(el.getLines() for el in els[0:els.index(self)])
+        firstline = 1+sum(int(el.height) for el in els[0:els.index(self)])
         # get colors
         hcolor = curses.color_pair(colors[win.color ].pairid)
         rcolor = curses.color_pair(colors[self.color].pairid)
         nflags = curses.A_BOLD
         hflags = curses.A_BOLD|curses.A_REVERSE
+        # get height
+        height = int(self.height)
+        if height < 5:
+            height = 5
         # draw a horizontal line
         win.curswin.hline(firstline+0, 0,      curses.ACS_LTEE,  1)
         win.curswin.hline(firstline+0, 1,      curses.ACS_HLINE, cols-2)
@@ -52,7 +61,7 @@ class Table:
         win.curswin.hline(firstline+2, cols-1, curses.ACS_RTEE,  1)
         # find how many rows to draw
         firstrow  = self.firstrow
-        winsize   = self.getLines()-4
+        winsize   = height-4
         lastrow   = min(firstrow+winsize,len(self.rowdata))
         sparerows = firstrow+winsize-lastrow
         # print rows
@@ -106,38 +115,20 @@ class Table:
             after  = cols-2-shown-before
             if lastrow == len(self.rowdata):
                 shown += after
-                after = 0        
+                after = 0   
         # print before
         win.curswin.hline(scrollline,  0,                    curses.ACS_LTEE,  1)
         win.curswin.hline(scrollline,  1,                    curses.ACS_HLINE, before)
         # print the shown part
-        win.curswin.addstr(scrollline, 1+before, "[" + "="*(shown-2) + "]")        
+        if (shown == cols-2):
+            win.curswin.hline(scrollline,  1+before,         curses.ACS_HLINE, cols-2)    
+        else:
+            win.curswin.addstr(scrollline, 1+before, "[" + "="*(shown-2) + "]")        
         # print after
         win.curswin.hline(scrollline,  1+before+shown,       curses.ACS_HLINE, after)
         win.curswin.hline(scrollline,  1+before+shown+after, curses.ACS_RTEE,  1)
         # done
         self.drawn = True
-
-    # get table height (including header)
-    def getLines(self):
-        # get context variables
-        curses = self.con.curses
-        wins   = self.con.wins
-        colors = self.con.colors
-        # get parent window
-        win    = self.win
-        # get parent window size
-        rows, cols = win.curswin.getmaxyx()
-        # calculate lines
-        if (self.height[-1] == "%"):
-            # calculate the percentage using
-            # parent window size
-            lines = int(self.height[:-1])*(rows-2)/100
-        else:
-            lines = int(self.height)
-        if (lines < 5):
-            lines = 5 # minimum 5
-        return lines
 
     def refresh(self):
         # refresh subwindows
@@ -157,13 +148,17 @@ class Table:
         curses = self.con.curses
         wins   = self.con.wins
         colors = self.con.colors
+        # get height
+        height = int(self.height)
+        if (height < 5):
+            height = 5
         # process key
         if (char == curses.KEY_DOWN):
             # select next row
             if (self.selrow < len(self.rowdata) - 1):
                 self.selrow = self.selrow+1
                 # update window boundaries
-                if (self.selrow >= self.firstrow+self.getLines()-4):
+                if (self.selrow >= self.firstrow+height-4):
                     self.firstrow += 1
         elif (char == curses.KEY_UP):
             # select previous row
@@ -179,6 +174,23 @@ class Table:
     # get current selected row
     def getSelRowIndex(self):
         return self.selrow
+
+    # set current selected row
+    def setSelRowIndex(self, selrow):
+        # update selrow
+        self.selrow = selrow
+        # get height
+        height = int(self.height)
+        if (height < 5):
+            height = 5
+        # update window boundaries
+        if (self.selrow >= self.firstrow+height-4):
+            self.firstrow += 1
+        if (self.selrow < self.firstrow):
+            self.firstrow -= 1
+        # redraw if needed
+        if self.drawn:
+            self.draw()
 
     # add row to table
     def addRow(self, row):
@@ -214,6 +226,18 @@ class Table:
         # update selrow
         if (self.selrow > len(self.rowdata)-1):
             self.selrow = len(self.rowdata)-1
+        # redraw if needed
+        if self.drawn:
+            self.draw()
+
+    # delete all rows
+    def delAllRows(self):
+        # clear the whole list
+        self.rowdata = []
+        # update window boundaries
+        self.firstrow = 0
+        # update selrow
+        self.selrow = -1
         # redraw if needed
         if self.drawn:
             self.draw()

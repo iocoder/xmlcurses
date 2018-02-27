@@ -10,11 +10,15 @@ class Window:
     height     = ""      # window XML height
     style      = ""      # window XML style
     color      = ""      # window color
-    elements   = []      # window elements in order
+    elements   = None   # window elements in order
     # internal
     hideFlag   = False   # To be hidden after action execution
     curline    = 1       # current line to draw the next element
     curswin    = None    # pointer to curses' window structure
+
+    # initialize
+    def __init__(self):
+        self.elements = []
 
     # show window
     def show(self):
@@ -61,6 +65,16 @@ class Window:
         self.curswin.bkgd('\0', wcolor|wflags)
         # reset curline attribute
         self.curline = 1
+        # calculate elements heights
+        available = rows-2
+        for element in self.elements:
+            if element.height[-1] != "%":
+                available -= int(element.height)
+        if (available < 0):
+            available = 0
+        for element in self.elements:
+            if element.height[-1] == "%":
+                element.height = str(int(element.height[:-1])*available/100)
         # draw elements
         for element in self.elements:
             element.draw()

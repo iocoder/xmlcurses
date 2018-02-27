@@ -8,6 +8,7 @@ class Title:
     con       = None
     # attributes
     name      = ""
+    height    = "1"
     text      = ""
     color     = ""
     # parent
@@ -26,7 +27,7 @@ class Title:
         rows, cols = win.curswin.getmaxyx()
         # find first line to draw the element at
         els = win.elements
-        firstline = 1+sum(el.getLines() for el in els[0:els.index(self)])
+        firstline = 1+sum(int(el.height) for el in els[0:els.index(self)])
         # move cursor to firstline
         win.curswin.move(firstline, 1)
         # get title text
@@ -36,10 +37,6 @@ class Title:
         flags = curses.A_BOLD
         # print the title
         win.curswin.addstr(text, color|flags)
-
-    def getLines(self):
-        # only 1 line
-        return 1
 
     def refresh(self):
         # refresh subwindows

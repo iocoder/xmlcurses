@@ -31,9 +31,9 @@ tbl.addRow(gen_row())
 
 # set button action
 box = win.getElementByName("box")
-box.setAction("A", lambda win: tbl.addRow(gen_row()))
-box.setAction("D", lambda win: tbl.delRow(tbl.getSelRowIndex()))
-box.setAction("Q", lambda win: win.hide())
+box.setAction("A", lambda: tbl.addRow(gen_row()))
+box.setAction("D", lambda: tbl.delRow(tbl.getSelRowIndex()))
+box.setAction("Q", lambda: win.hide())
 
 # show the window
 win.show()
