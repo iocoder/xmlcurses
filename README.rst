@@ -8,7 +8,8 @@ Introduction
 ------------
 
 This package serves as an easy-to-use interface for Python's curses library. The goal of XMLCurses
-is to allow Python programmers describe their desired curses windows' layout using XML files.
+is to allow Python programmers describe their desired layourt for curses windows in a simple
+way, using XML files.
 
 Requirements
 -------------
