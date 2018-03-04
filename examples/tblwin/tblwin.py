@@ -4,15 +4,15 @@ import xmlcurses
 
 # generate numbers
 seq = 0
-def gen_num():
+def genNum():
    global seq
    seq += 1
    return "%03d" % seq 
 
 # generate row
-def gen_row():
-    return {"A": gen_num(), "B": gen_num(), 
-            "C": gen_num(), "D": gen_num()}
+def genRow():
+    return {"A": genNum(), "B": genNum(), 
+            "C": genNum(), "D": genNum()}
 
 # initialize xmlcurses
 xmlcurses.init()
@@ -21,18 +21,18 @@ xmlcurses.init()
 xmlcurses.parse("curses.xml")
 
 # get window instance
-win = xmlcurses.getWinByName("win_table")
+win = xmlcurses.getWinByName("wintable")
 
-# get the table
+# add some rows to the table
 tbl = win.getElementByName("tbl")
-tbl.addRow(gen_row())
-tbl.addRow(gen_row())
-tbl.addRow(gen_row())
+tbl.addRow(genRow())
+tbl.addRow(genRow())
+tbl.addRow(genRow())
 
 # set button action
 box = win.getElementByName("box")
-box.setAction("A", lambda: tbl.addRow(gen_row()))
-box.setAction("D", lambda: tbl.delRow(tbl.getSelRowIndex()) if tbl.getSelRowIndex() >= 0 else None)
+box.setAction("A", lambda: tbl.addRow(genRow()))
+box.setAction("D", lambda: tbl.delRow(tbl.getSelRowIndex()))
 box.setAction("Q", lambda: win.hide())
 
 # show the window

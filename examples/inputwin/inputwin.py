@@ -9,13 +9,13 @@ xmlcurses.init()
 xmlcurses.parse("curses.xml")
 
 # get window instance
-win = xmlcurses.getWinByName("win_input")
+win = xmlcurses.getWinByName("wininput")
 
 # get text fields
 field1 = win.getElementByName("field1")
 field2 = win.getElementByName("field2")
 
-# put initial value for field 2
+# set an initial value for field 2
 field2.setText("initial value")
 
 # set button actions

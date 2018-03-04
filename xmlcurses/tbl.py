@@ -221,6 +221,9 @@ class Table:
 
     # delete row at index
     def delRow(self, indx):
+        # index is less than zero?
+        if indx < 0:
+            return
         # delete a row
         self.rowdata.remove(self.rowdata[indx])
         # update window boundaries

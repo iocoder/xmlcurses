@@ -8,7 +8,7 @@
         <color name="button"  foreground="white"  background="blue"  />
     </colors>
     <windows>
-        <window name="win_msg" width="50" height="7" color="win">
+        <window name="winmsg" width="50" height="7" color="win">
 
             <title name="" text="Message Window Title" color="title" />
 
