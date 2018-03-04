@@ -1,9 +1,8 @@
 XMLCurses
 =========
 
-.. contents:: Table of Contents
+.. contents:: Table of Contents:
    :local:
-
 
 Introduction
 ------------
