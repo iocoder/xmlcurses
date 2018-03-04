@@ -1,8 +1,9 @@
 PPATH=$(shell pwd)
 
-upload:
-	rm -r build
-	rm -r dist
+clean:
+	sudo rm -rf build dist xmlcurses.egg-info
+
+upload: clean
 	python setup.py sdist
 	python setup.py bdist_wheel
 	twine upload dist/*
@@ -18,6 +19,12 @@ uninstall2:
 
 uninstall3:
 	sudo pip3 uninstall xmlcurses
+
+run:
+	cd examples/$(EXAMPLE) && python $(EXAMPLE).py
+
+run_local:
+	cd examples/$(EXAMPLE) && PYTHONPATH=$(PPATH) python $(EXAMPLE).py
 
 run2:
 	cd examples/$(EXAMPLE) && python2 $(EXAMPLE).py
