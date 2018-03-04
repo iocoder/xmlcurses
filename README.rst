@@ -1,8 +1,3 @@
-xmlcurses
-=========
-An interface for python's curses library using XML files to describe windows and their contents
-
-
 XMLCurses
 =========
 
@@ -33,7 +28,7 @@ The last stable release is available on PyPI and can be installed with ``pip``::
 Documentation
 -------------
 
-Documentation is available online: http://pymysql.readthedocs.io/
+Documentation is available online: http://xmlcurses.readthedocs.io/
 
 Code Examples
 -------------

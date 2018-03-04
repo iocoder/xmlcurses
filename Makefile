@@ -8,6 +8,9 @@ upload: clean
 	python setup.py bdist_wheel
 	twine upload dist/*
 
+docs:
+    python setup.py build_sphinx
+
 install2:
 	sudo python2 setup.py install
 
