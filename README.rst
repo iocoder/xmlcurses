@@ -14,9 +14,15 @@ way, using XML files.
 Requirements
 -------------
 
-* Python:
+* Python -- one of the following:
 
   - CPython_ >= 2.6 or >= 3.3
+  - PyPy_ >= 4.0
+  - IronPython_ 2.7
+
+.. _CPython: http://www.python.org/
+.. _PyPy: http://pypy.org/
+.. _IronPython: http://ironpython.net/
 
 Installation
 ------------

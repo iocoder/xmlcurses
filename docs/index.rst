@@ -9,33 +9,21 @@ python routines that parse the XML files, draw the described
 windows on terminal, populate them with data, wait
 for user input, and do many other useful tasks.
 
-I advise you to start with :doc:`intro/intro` page to get
+I advise you to start with :doc:`user/intro` page to get
 an idea of the basic concepts and use cases of xmlcurses
-library. Next, you can check the :doc:`examples/examples` page
-to see snippets of python code that use xmlcurses
+library. Next, you can check :doc:`user/install` page
+for the installation manual, and :doc:`user/examples` page
+for snippets of python code that use xmlcurses
 routines, along with xml layout examples.
 
-The :doc:`tutorial/tutorial` page helps you build an xmlcurses-based
-python program step by step. Finally, :doc:`xml/xml` and
-:doc:`classes/classes` enumerate all XML tags and python
+For a comprehensive API, :doc:`modules/xml` and
+:doc:`modules/python` pages enumerate all XML tags and python
 classes defined by xmlcurses library.
-
-Documentation Sections
-----------------------
 
 .. toctree::
    :maxdepth: 2
+   :caption: Table of Contents:
 
-   intro/intro.rst
-   install/install.rst
-   examples/examples.rst
-   tutorial/tutorial.rst
-   xml/xml.rst
-   classes/classes.rst
+   user/index
+   modules/index
 
-Indices and tables
-------------------
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

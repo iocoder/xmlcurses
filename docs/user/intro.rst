@@ -1,5 +1,5 @@
-Introduction to XMLCurses Library
-=================================
+Introduction
+============
 
 The purpose of this library is to make it easy to create
 terminal-based interactive content using python and curses.
@@ -9,8 +9,8 @@ then invoke the simple xmlcurses' module methods from the
 python code in order to parse the XML descriptions,
 populate the windows, and show them to the end-user.
 
-UI Design Flow Using XMLCurses
-------------------------------
+UI Design Flow
+--------------
 
 A typical use case for xmlcurses is to create a terminal
 window that accepts some kind of input, and processes
@@ -254,25 +254,4 @@ Now we are ready to display the window::
     win.show()
 
 The show() routine will return when win.hide() is executed.
-
-What's Next
------------
-
-Start by installing xmlcurses library on your machine. Use
-:doc:`../install/install` manual page to
-guide you on the installation procedure.
-
-Next, I suggest you check the examples under examples/ directory in the
-source code (they are explained in the documentation page:
-:doc:`../examples/examples`) for typical use cases. If you are
-too stupid and the examples are not clear enough to you
-because you have mental health issues, check the tutorial page:
-:doc:`../tutorial/tutorial`.
-
-Now you are ready to start coding with xmlcurses by yourself.
-While you are coding, refer to :doc:`../xml/xml` and 
-:doc:`../classes/classes` manual pages
-for the listing of all XML tags/attributes and
-python classes/objects/methods/attributes of the library,
-respectively.
 
