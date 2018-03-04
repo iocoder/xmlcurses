@@ -33,7 +33,7 @@ Documentation is available online: http://xmlcurses.readthedocs.io/
 Code Examples
 -------------
 
-To execute the code examples provided in the source code, execute:
+To execute the code examples provided in the source code, execute::
 
     $ make run EXAMPLE='exampleName'
 
