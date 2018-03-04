@@ -9,12 +9,12 @@ Introduction
 ------------
 
 This package serves as an easy-to-use interface for Python's curses library. The goal of XMLCurses
-is to allow users describe their desired curses windows' layout using XML files.
+is to allow Python programmers describe their desired curses windows' layout using XML files.
 
 Requirements
 -------------
 
-* Python -- one of the following:
+* Python:
 
   - CPython_ >= 2.6 or >= 3.3
 
@@ -35,9 +35,9 @@ Code Examples
 
 To execute the code examples provided in the source code, execute:
 
-    $ make run EXAMPLE=$(EXAMPLE)
+    $ make run EXAMPLE='exampleName'
 
-Replace $(EXAMPLE) with msgwin, inputwin, or tblwin. 
+Replace 'exampleName' with msgwin, inputwin, or tblwin. 
 
 License
 -------
