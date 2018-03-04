@@ -10,19 +10,19 @@ import tempfile
 import sys
 
 # xmlcurses library context
-from con import Context
+from .con import Context
 
 # submodules public to the user of xmlcurses
-from clr import Color
-from win import Window
-from ttl import Title
-from cap import Caption
-from tbl import Table
-from fld import Field
-from box import ButtonBox
+from .clr import Color
+from .win import Window
+from .ttl import Title
+from .cap import Caption
+from .tbl import Table
+from .fld import Field
+from .box import ButtonBox
 
 # errors
-from err import XMLException
+from .err import XMLException
 
 #################################################################
 #                      Context Manipulation                     #
@@ -211,7 +211,7 @@ def close():
     # now read & print the messages stored inside the pipe!
     while True:  
         data = os.read(con.newerr, 100)
-        sys.stderr.write(data)
+        sys.stderr.write(data.decode("ascii"))
         if len(data) < 100:
             break
 

@@ -50,7 +50,7 @@ class Table:
         win.curswin.hline(firstline+0, 1,      curses.ACS_HLINE, cols-2)
         win.curswin.hline(firstline+0, cols-1, curses.ACS_RTEE,  1)
         # print table titles
-        colwidth = (cols-3)/len(self.colnames)
+        colwidth = (cols-3)//len(self.colnames)
         win.curswin.move(firstline+1, 1)
         for colname in self.colnames:
             text  = ("{:^%d}"%(colwidth)).format(colname)
@@ -106,8 +106,8 @@ class Table:
             shown  = cols-2
             after  = 0
         else:
-            before = firstrow*(cols-2)/len(self.rowdata)
-            shown  = (lastrow-firstrow)*(cols-2)/len(self.rowdata)
+            before = firstrow*(cols-2)//len(self.rowdata)
+            shown  = (lastrow-firstrow)*(cols-2)//len(self.rowdata)
             if (shown < 3):
                 shown = 3
                 if (before+shown > cols-2):

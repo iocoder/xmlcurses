@@ -39,11 +39,11 @@ class Field:
         totwidth  = cols-4-titlewidth
         textwidth = 0
         if (self.width[-1] == "%"):
-            textwidth = int(self.width[:-1])*(totwidth)/100
+            textwidth = int(self.width[:-1])*(totwidth)//100
         else:
             textwidth = min(int(self.width), totwidth)
         # find screen col to begin at
-        x = (cols-4-textwidth-titlewidth)/2+2
+        x = (cols-4-textwidth-titlewidth)//2+2
         # move to line and char
         win.curswin.move(firstline, x)
         # get colors
@@ -108,6 +108,16 @@ class Field:
     def setText(self, text):
         # set text attribute
         self.text = text
+        # already drawn?
+        if self.txtwin != None:
+            # clear text window
+            self.txtwin.clear()
+            # move cursor
+            self.cursor = (0, 0)
+            # insert text into window
+            self.txtwin.addstr(self.text)
+            # refresh parent window
+            self.win.redraw()
 
     # get text
     def getText(self):

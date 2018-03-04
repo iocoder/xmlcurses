@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import sys
+
 class Window:
 
     # context
@@ -32,25 +34,20 @@ class Window:
         # get screen dimensions from curses module
         totlines = curses.LINES
         totcols  = curses.COLS
-        # initialize window dimensions
-        winx = 0
-        winy = 0
-        cols = 0
-        rows = 0
         # read width
         if (self.width[-1] == "%"):
-            cols = int(self.width[:-1])*(totcols)/100
+            cols = int(self.width[:-1])*(totcols)//100
         else:
             cols = int(self.width)
         # read height
         if (self.height[-1] == "%"):
-            rows = int(self.height[:-1])*(totlines)/100
+            rows = int(self.height[:-1])*(totlines)//100
         else:
             rows = int(self.height)
         # calculate x
-        winx = (totcols-cols)/2
+        winx = (totcols-cols)//2
         # calculate y
-        winy = (totlines-rows)/2
+        winy = (totlines-rows)//2
         # create window
         self.curswin = curses.newwin(rows, cols, winy, winx)       
         # clear window
@@ -74,7 +71,7 @@ class Window:
             available = 0
         for element in self.elements:
             if element.height[-1] == "%":
-                element.height = str(int(element.height[:-1])*available/100)
+                element.height = str(int(element.height[:-1])*available//100)
         # any focusable element?
         focusable = []
         curfocus = 0

@@ -40,7 +40,7 @@ class ButtonBox:
         btnswidth = 0
         for btn in self.buttons:
             btnswidth += len(btn["key"]) + len(btn["text"]) + 2
-        spaces  = " " * ((cols-2-btnswidth)/2)
+        spaces  = " " * ((cols-2-btnswidth)//2)
         win.curswin.addstr(spaces)
         # print buttons
         for btn in self.buttons:
